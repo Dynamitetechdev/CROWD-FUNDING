@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/crowdContract.sol": {
+      "content": "//SPDX-License-Identifier: MIT\npragma solidity >0.5.0 <0.9.0;\n\ncontract CrowdFund {\n    address public ownerAddress;\n    uint256 public minimumEth = 1000;\n    address[] public listOfFunders;\n    mapping(address => uint) public getAmountPaid;\n\n    constructor() {\n        ownerAddress = msg.sender;\n    }\n\n    modifier onlyOwner() {\n        require(\n            msg.sender == ownerAddress,\n            \"This Address Cannot Withdraw cause it is not the owners address\"\n        );\n        _;\n    }\n\n    receive() external payable {\n        fund();\n    }\n\n    fallback() external payable {\n        fund();\n    }\n\n    function fund() public payable {\n        require(msg.value >= minimumEth, \"Send 1 eth at least\");\n        listOfFunders.push(msg.sender);\n        getAmountPaid[msg.sender] = msg.value;\n    }\n\n    function withdraw() public onlyOwner {\n        (bool withdrawSuccess, ) = payable(msg.sender).call{\n            value: address(this).balance\n        }(\"\");\n        require(withdrawSuccess, \"Withdrawal Not Successful\");\n\n        for (uint256 index = 0; index < listOfFunders.length; index++) {\n            address eachFunderAddress = listOfFunders[index];\n            getAmountPaid[eachFunderAddress] = 0;\n        }\n        listOfFunders = new address[](0);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
