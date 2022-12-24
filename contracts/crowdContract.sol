@@ -3,7 +3,7 @@ pragma solidity >0.5.8 <0.9.0;
 
 contract CrowdFund {
     address public ownerAddress;
-    uint256 public minimumEth = 1000;
+    uint256 public minimumEth = 10;
     address[] public listOfFunders;
     mapping(address => uint) public getAmountPaid;
 
